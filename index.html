@@ -2,14 +2,70 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Datos desde Google Sheets</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Google Sheets multi-hoja</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    select { margin-bottom: 1rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background: #4caf50; color: white; }
+  </style>
 </head>
 <body>
   <h1>Datos desde Google Sheets</h1>
+
+  <label for="sheetSelect">Elegí la hoja:</label>
+  <select id="sheetSelect">
+    <option value="Recetas">Recetas</option>
+    <option value="Cursos">Cursos</option>
+  </select>
+
   <div id="data-container">Cargando datos...</div>
 
-  <script src="script.js"></script>
+  <script>
+    const SHEET_ID = '1lw15yJQVb4EktYMaCKSDkPG8g16lOd7PDO_baK4KtgM';
+
+    async function loadSheetData(sheetName) {
+      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+      document.getElementById('data-container').innerText = 'Cargando datos...';
+
+      try {
+        const res = await fetch(url);
+        const text = await res.text();
+        const json = JSON.parse(text.substr(47).slice(0, -2));
+        const rows = json.table.rows.map(r => r.c.map(c => c?.v));
+        renderTable(rows);
+      } catch (err) {
+        console.error(err);
+        document.getElementById('data-container').innerText = 'Error al cargar la hoja.';
+      }
+    }
+
+    function renderTable(rows) {
+      if (!rows.length) return;
+      const container = document.getElementById('data-container');
+
+      let html = '<table><thead><tr>';
+      rows[0].forEach(header => (html += `<th>${header}</th>`));
+      html += '</tr></thead><tbody>';
+
+      rows.slice(1).forEach(row => {
+        html += '<tr>';
+        row.forEach(cell => (html += `<td>${cell ?? ''}</td>`));
+        html += '</tr>';
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    // Evento para cambiar de hoja
+    document.getElementById('sheetSelect').addEventListener('change', e => {
+      loadSheetData(e.target.value);
+    });
+
+    // Cargar la primera hoja al inicio
+    loadSheetData('Recetas');
+  </script>
 </body>
 </html>
