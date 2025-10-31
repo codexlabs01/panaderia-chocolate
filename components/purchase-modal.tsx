@@ -22,11 +22,47 @@ export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: Purc
     email: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const PAYMENT_URL = "https://mpago.la/2s63Lr2"
+  const POST_URL = "https://script.google.com/macros/s/AKfycbz120fqiDRbI9CFpG5WSRZOh7K4l4oxUX1kQraGKnEPGeLjuacPqs_V2GxS4iatcOpP/exec" // reemplaza con tu URL real
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Compra de receta:", { ...formData, recipeName, recipePrice })
-    // Aquí puedes agregar la lógica para procesar la compra
-    alert(`Gracias por tu compra de ${recipeName}!`)
+    // crear objeto solicitado
+    const payload = {
+      solicitud_de_compra: {
+        nombre: formData.firstName || "Edgar",
+        apellido: formData.lastName || "Gómez",
+        mail: formData.email || "edgar@example.com",
+        confirmada: true,
+      },
+    }
+
+    console.log("Compra de receta (local):", { ...payload, recipeName, recipePrice })
+
+    try {
+      // enviar POST al script
+      const res = await fetch(POST_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain",
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await res.json()
+      console.log("Respuesta del servidor:", data)
+    } catch (err) {
+      console.error("Error al enviar:", err)
+      // continuar igualmente hacia el pago aunque falle el POST, si se desea
+    }
+
+    // Abrir link de pago y cerrar modal
+    try {
+      window.open(PAYMENT_URL, "_blank", "noopener,noreferrer")
+    } catch (err) {
+      window.location.href = PAYMENT_URL
+    }
+
     onClose()
     setFormData({ firstName: "", lastName: "", email: "" })
   }
