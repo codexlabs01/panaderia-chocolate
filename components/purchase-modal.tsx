@@ -41,7 +41,7 @@ export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: Purc
 
     const res = await fetch("/.netlify/functions/enviarCorreo",{
       method: "POST",
-      headers: {
+      headers: { 
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
