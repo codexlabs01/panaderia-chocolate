@@ -7,10 +7,9 @@ exports.handler = async (event,context) => {
     };
   }
 
-  const { nombre, apellido, mail, mensaje } = JSON.parse(event.body);
-
+ 
   // Acá iría el envío de correo (con nodemailer, resend, etc.)
-  console.log('Solicitud recibida:', { nombre, apellido, mail, mensaje });
+  console.log('Solicitud recibida:', JSON.parse(event.body));
 
   return {
     statusCode: 200,
