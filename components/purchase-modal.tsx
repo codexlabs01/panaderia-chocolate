@@ -44,7 +44,7 @@ export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: Purc
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...payload, recipeName, recipePrice }),
+      body: JSON.stringify(formData),
     })
 
     //funcion para enviar mail
