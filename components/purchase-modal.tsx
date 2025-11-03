@@ -39,7 +39,7 @@ export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: Purc
 
     console.log("Compra de receta (local):", { ...payload, recipeName, recipePrice })
 
-    const res = await fetch("https://.netlify/functions/enviarCorreo",{
+    const res = await fetch("/.netlify/functions/enviarCorreo",{
       method: "POST",
       headers: {
         "Content-Type": "application/json",
