@@ -56,7 +56,7 @@ exports.handler = async (event, context) => {
     }
 
     const clientText = `Hola ${firstName || ""} ${lastName || ""},\n\nHemos recibido tu compra. Gracias.`
-    const adminText = `Nueva compra de ${firstName || ""} ${lastName || ""} - correo: ${mail}`
+    const adminText = `Nueva compra de ${firstName || ""} ${lastName || ""} - correo: ${email}`
 
     // AWAIT: importante esperar a que terminen los envíos
     await Promise.all([
