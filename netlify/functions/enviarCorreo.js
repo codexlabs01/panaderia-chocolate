@@ -74,7 +74,7 @@ exports.handler = async (event, context) => {
     console.error("Error enviarCorreo:", err)
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Error interno al procesar la solicitud" }),
+      body: JSON.stringify({ error: err.message || "Error interno al procesar la solicitud" }),
     }
   }
 }
