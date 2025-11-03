@@ -39,6 +39,14 @@ export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: Purc
 
     console.log("Compra de receta (local):", { ...payload, recipeName, recipePrice })
 
+    const res = await fetch("https://.netlify/functions/enviarCorreo",{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...payload, recipeName, recipePrice }),
+    })
+
     //funcion para enviar mail
 
     // Abrir link de pago y cerrar modal
