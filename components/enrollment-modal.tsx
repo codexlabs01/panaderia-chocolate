@@ -29,6 +29,8 @@ export function EnrollmentModal({ open, onOpenChange, courseTitle }: EnrollmentM
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log("[v0] Formulario enviado:", formData)
+
+    
     // Aquí puedes agregar la lógica para enviar los datos
     alert("¡Inscripción enviada con éxito!")
     onOpenChange(false)

@@ -1,5 +1,6 @@
 const { config } = require("dotenv")
 const nodemailer = require("nodemailer")
+import { generarHtmlCompra } from './generarHtmlCompra';
 config()
 
 const MAIL_HOST = process.env.MAIL_HOST
@@ -30,13 +31,14 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-async function sendEmail(to, subject, text, html) {
+
+
+async function sendEmail(to, subject, html) {
   const mailOptions = {
     from: MAIL_USER,
     to,
     subject,
-    text,
-    ...(html ? { html } : {}),
+    html
   }
 
   return transporter.sendMail(mailOptions)
@@ -51,20 +53,19 @@ exports.handler = async (event, context) => {
     const body = JSON.parse(event.body || "{}")
     const { email, nombre, apellido, receta, precio } = body
 
+
+
     if (!email) {
       return { statusCode: 400, body: JSON.stringify({ error: "Falta campo email" }) }
     }
 
-    const clientText = 
-    ` Hola ${nombre || ""} ${apellido || ""},\n\nHemos recibido tu compra de la receta ${receta || ""}. 
-      El precio total es $ ${precio || ""}.\n\nTe enviaremos más detalles a tu correo electrónico pronto.\n\n
-      
-      Gracias.`
-    const adminText = `Nueva compra de ${nombre || ""} ${apellido || ""} por la receta ${receta || ""} $ ${precio || ""} - Correo: ${email}`
+    const html = generarHtmlCompra({ nombre, receta, precio })
+
+     const adminText = `Nueva compra de ${nombre || ""} ${apellido || ""} por la receta ${receta || ""} $ ${precio || ""} - Correo: ${email}`
 
     // AWAIT: importante esperar a que terminen los envíos
     await Promise.all([
-      sendEmail(email, "Compra Exitosa", clientText, `<p>${clientText}</p>`),
+      sendEmail(email, "Compra Exitosa", html),
       sendEmail(MAIL_USER, "Nuevo pedido recibido", adminText, `<p>${adminText}</p>`),
     ])
 
