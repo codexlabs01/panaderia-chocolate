@@ -60,7 +60,7 @@ exports.handler = async (event, context) => {
 
     // AWAIT: importante esperar a que terminen los envíos
     await Promise.all([
-      sendEmail(mail, "Compra Exitosa", clientText, `<p>${clientText}</p>`),
+      sendEmail(email, "Compra Exitosa", clientText, `<p>${clientText}</p>`),
       sendEmail(MAIL_USER, "Nuevo pedido recibido", adminText, `<p>${adminText}</p>`),
     ])
 
