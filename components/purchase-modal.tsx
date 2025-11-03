@@ -39,22 +39,7 @@ export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: Purc
 
     console.log("Compra de receta (local):", { ...payload, recipeName, recipePrice })
 
-    try {
-      // enviar POST al script
-      const res = await fetch(POST_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain",
-        },
-        body: JSON.stringify(payload),
-      })
-
-      const data = await res.json()
-      console.log("Respuesta del servidor:", data)
-    } catch (err) {
-      console.error("Error al enviar:", err)
-      // continuar igualmente hacia el pago aunque falle el POST, si se desea
-    }
+    //funcion para enviar mail
 
     // Abrir link de pago y cerrar modal
     try {
@@ -65,6 +50,7 @@ export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: Purc
 
     onClose()
     setFormData({ firstName: "", lastName: "", email: "" })
+  
   }
 
   return (
