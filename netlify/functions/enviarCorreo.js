@@ -49,14 +49,18 @@ exports.handler = async (event, context) => {
     }
 
     const body = JSON.parse(event.body || "{}")
-    const { email, firstName, lastName } = body
+    const { email, nombre, apellido, receta, precio } = body
 
     if (!email) {
       return { statusCode: 400, body: JSON.stringify({ error: "Falta campo email" }) }
     }
 
-    const clientText = `Hola ${firstName || ""} ${lastName || ""},\n\nHemos recibido tu compra. Gracias.`
-    const adminText = `Nueva compra de ${firstName || ""} ${lastName || ""} - correo: ${email}`
+    const clientText = 
+    ` Hola ${nombre || ""} ${apellido || ""},\n\nHemos recibido tu compra de la receta ${receta || ""}. 
+      El precio total es $ ${precio || ""}.\n\nTe enviaremos más detalles a tu correo electrónico pronto.\n\n
+      
+      Gracias.`
+    const adminText = `Nueva compra de ${nombre || ""} ${apellido || ""} por la receta ${receta || ""} $ ${precio || ""} - Correo: ${email}`
 
     // AWAIT: importante esperar a que terminen los envíos
     await Promise.all([

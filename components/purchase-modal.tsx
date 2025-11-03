@@ -28,23 +28,24 @@ export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: Purc
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // crear objeto solicitado
-    const payload = {
-      solicitud_de_compra: {
+    const payload =  JSON.stringify({
+      
         nombre: formData.firstName || "Edgar",
         apellido: formData.lastName || "Gómez",
         mail: formData.email || "edgar@example.com",
-        confirmada: true,
-      },
-    }
+        receta: recipeName,
+        precio: recipePrice
+      }
+    )
 
-    console.log("Compra de receta (local):", { ...payload, recipeName, recipePrice })
+
 
     const res = await fetch("/.netlify/functions/enviarCorreo",{
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: payload,
     })
 
     //funcion para enviar mail
