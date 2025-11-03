@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { json } from "stream/consumers"
 
 interface PurchaseModalProps {
   isOpen: boolean
@@ -28,15 +29,15 @@ export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: Purc
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // crear objeto solicitado
-    const payload =  JSON.stringify({
-      
+    const payload =  {
+
         nombre: formData.firstName || "Edgar",
         apellido: formData.lastName || "Gómez",
-        mail: formData.email || "edgar@example.com",
+        email: formData.email || "edgar@example.com",
         receta: recipeName,
         precio: recipePrice
       }
-    )
+    
 
 
 
@@ -45,7 +46,7 @@ export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: Purc
       headers: { 
         "Content-Type": "application/json",
       },
-      body: payload,
+      body: JSON.stringify(payload),
     })
 
     //funcion para enviar mail
