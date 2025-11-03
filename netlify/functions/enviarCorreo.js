@@ -49,10 +49,10 @@ exports.handler = async (event, context) => {
     }
 
     const body = JSON.parse(event.body || "{}")
-    const { mail, firstName, lastName } = body
+    const { email, firstName, lastName } = body
 
-    if (!mail) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Falta campo mail" }) }
+    if (!email) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Falta campo email" }) }
     }
 
     const clientText = `Hola ${firstName || ""} ${lastName || ""},\n\nHemos recibido tu compra. Gracias.`
