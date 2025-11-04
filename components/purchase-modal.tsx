@@ -16,6 +16,9 @@ interface PurchaseModalProps {
   recipePrice: string
 }
 
+
+
+
 export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: PurchaseModalProps) {
   const [formData, setFormData] = useState({
     firstName: "",
