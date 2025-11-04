@@ -17,7 +17,7 @@ if (!MAIL_HOST || !MAIL_USER || !MAIL_PASS) {
 }
 
 
-function generarHtmlCompra({ nombre, receta, precio }) {
+function generarHtmlCliente({ nombre, receta, precio }) {
   return `
     <!DOCTYPE html>
     <html lang="es">
@@ -52,9 +52,9 @@ function generarHtmlCompra({ nombre, receta, precio }) {
       </head>
       <body>
         <div class="container">
-          <p class="title">Hola <strong>${nombre}</strong>,</p>
+          <p class="title">Hola <strong>${nombre}</strong></p>
           <p>Hemos recibido tu compra de la receta <strong>${receta}</strong>.</p>
-          <p>El precio total es <strong>$ ${precio}</strong>.</p>
+          <p>El precio total es <strong>${precio}</strong>.</p>
           <p>Te enviaremos más detalles a tu correo electrónico pronto.</p>
           <p class="footer">Gracias por tu compra.</p>
         </div>
@@ -63,6 +63,59 @@ function generarHtmlCompra({ nombre, receta, precio }) {
   `;
 }
 
+function generarHtmlAdmin({ nombre, apellido, receta, precio, email }) {
+  return `
+    <!DOCTYPE html>
+    <html lang="es">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Nueva compra recibida</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            color: #333;
+          }
+          .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+          }
+          .title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: bold;
+          }
+          .info {
+            font-size: 16px;
+            line-height: 1.6;
+          }
+          .footer {
+            margin-top: 25px;
+            font-size: 13px;
+            color: #777;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <p class="title">Nueva compra recibida</p>
+          <p class="info">
+            <strong>Cliente:</strong> ${nombre || ''} ${apellido || ''}<br />
+            <strong>Receta:</strong> ${receta || ''}<br />
+            <strong>Precio:</strong> $ ${precio || ''}<br />
+            <strong>Correo:</strong> ${email || ''}
+          </p>
+          <p class="footer">Este mensaje fue generado automáticamente por el sistema de ventas.</p>
+        </div>
+      </body>
+    </html>
+  `;
+}
 
 
 
@@ -109,14 +162,14 @@ exports.handler = async (event, context) => {
       return { statusCode: 400, body: JSON.stringify({ error: "Falta campo email" }) }
     }
 
-    const html = generarHtmlCompra({ nombre, receta, precio })
+    const html = generarHtmlCliente({ nombre, receta, precio })
+    const htmlAdmin = generarHtmlAdmin({ nombre, apellido, receta, precio, email })
 
-     const adminText = `Nueva compra de ${nombre || ""} ${apellido || ""} por la receta ${receta || ""} $ ${precio || ""} - Correo: ${email}`
-
+ 
     // AWAIT: importante esperar a que terminen los envíos
     await Promise.all([
       sendEmail(email, "Compra Exitosa", html),
-      sendEmail(MAIL_USER, "Nuevo pedido recibido", adminText, `<p>${adminText}</p>`),
+      sendEmail(MAIL_USER, "Nuevo pedido recibido", htmlAdmin),
     ])
 
     console.log("Solicitud recibida:", body)
