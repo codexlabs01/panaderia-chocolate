@@ -118,6 +118,7 @@ function generarHtmlAdmin({ nombre, apellido, receta, precio, email }) {
   `;
 }
 
+
 function generarHtmlAdminCurso({ nombre, apellido, email, telefono, experiencia, expectativas, curso }) {
   return `
     <!DOCTYPE html>

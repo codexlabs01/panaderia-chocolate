@@ -39,7 +39,7 @@ export function EnrollmentModal({ open, onOpenChange, courseTitle }: EnrollmentM
         experiencia: formData.experience || "none",
         expectativas: formData.expectations || " ",
         curso: courseTitle,
-        tipo: "curso"
+        tipo: "curso" 
       }
     
 
@@ -134,25 +134,25 @@ export function EnrollmentModal({ open, onOpenChange, courseTitle }: EnrollmentM
               onValueChange={(value) => setFormData({ ...formData, experience: value })}
             >
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="none" id="none" />
+                <RadioGroupItem value="ninguna" id="none" />
                 <Label htmlFor="none" className="font-normal cursor-pointer">
                   Sin experiencia
                 </Label>
               </div>
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="basic" id="basic" />
+                <RadioGroupItem value="basica" id="basic" />
                 <Label htmlFor="basic" className="font-normal cursor-pointer">
                   Experiencia básica
                 </Label>
               </div>
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="intermediate" id="intermediate" />
+                <RadioGroupItem value="intermedia" id="intermediate" />
                 <Label htmlFor="intermediate" className="font-normal cursor-pointer">
                   Experiencia intermedia
                 </Label>
               </div>
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="advanced" id="advanced" />
+                <RadioGroupItem value="avanzada" id="advanced" />
                 <Label htmlFor="advanced" className="font-normal cursor-pointer">
                   Experiencia avanzada
                 </Label>
