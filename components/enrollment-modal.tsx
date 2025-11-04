@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Loader2 } from "lucide-react"
 
 interface EnrollmentModalProps {
   open: boolean
@@ -25,13 +26,16 @@ export function EnrollmentModal({ open, onOpenChange, courseTitle }: EnrollmentM
     experience: "none",
     expectations: "",
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("[v0] Formulario enviado:", formData)
+    setIsSubmitting(true)
 
-      const payload =  {
+    try {
+      console.log("[v0] Formulario enviado:", formData)
 
+      const payload = {
         nombre: formData.firstName || " ",
         apellido: formData.lastName || " ",
         email: formData.email || "edgar@example.com",
@@ -39,36 +43,42 @@ export function EnrollmentModal({ open, onOpenChange, courseTitle }: EnrollmentM
         experiencia: formData.experience || "none",
         expectativas: formData.expectations || " ",
         curso: courseTitle,
-        tipo: "curso" 
+        tipo: "curso",
       }
-    
 
+      const res = await fetch("/.netlify/functions/enviarCorreo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
 
+      if (!res.ok) {
+        throw new Error("Error al enviar el formulario")
+      }
 
-    const res = await fetch("/.netlify/functions/enviarCorreo",{
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    })
-    
-    // Aquí puedes agregar la lógica para enviar los datos
-    alert("¡Inscripción enviada con éxito!")
-    onOpenChange(false)
-    // Resetear formulario
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      experience: "Ninguna",
-      expectations: "",
-    })
+      alert("¡Inscripción enviada con éxito!")
+      onOpenChange(false)
+      // Resetear formulario
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        experience: "Ninguna",
+        expectations: "",
+      })
+    } catch (error) {
+      console.error("Error:", error)
+      alert("Hubo un error al enviar el formulario")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={isSubmitting ? undefined : onOpenChange}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">Inscripción al Curso</DialogTitle>
@@ -173,11 +183,28 @@ export function EnrollmentModal({ open, onOpenChange, courseTitle }: EnrollmentM
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="flex-1"
+              disabled={isSubmitting}
+            >
               Cancelar
             </Button>
-            <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90">
-              Enviar Inscripción
+            <Button
+              type="submit"
+              className="flex-1 bg-primary hover:bg-primary/90"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Enviando...
+                </>
+              ) : (
+                "Enviar Inscripción"
+              )}
             </Button>
           </div>
         </form>
