@@ -254,7 +254,7 @@ exports.handler = async (event, context) => {
     // AWAIT: importante esperar a que terminen los envíos
     await Promise.all([
       sendEmail(email, "Inscripción Exitosa", htmlCursoCliente),
-      sendEmail(MAIL_USER, "Nueva inscripción recibida", htmlCursoAdmin),
+      sendEmail(MAIL_USER, "Nueva inscripción recibida", htmlCusrsoAdmin),
     ])
     console.log("Solicitud recibida:", body)
     return {
