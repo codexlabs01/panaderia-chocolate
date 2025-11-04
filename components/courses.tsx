@@ -57,7 +57,8 @@ export function Courses() {
       setIsLoading(true)
       setError(null)
       try {
-        const res = await fetch("https://script.google.com/macros/s/AKfycbz120fqiDRbI9CFpG5WSRZOh7K4l4oxUX1kQraGKnEPGeLjuacPqs_V2GxS4iatcOpP/exec?hoja=Cursos", { signal: controller.signal })
+        const res = await fetch("https://script.google.com/macros/s/AKfycby6RnikJ74ubins3zLaLrF3cJcdiYkCLhVsr6W2_KOCaWMS-Yj_O0pIlphWjtEwujbJ/exec?hoja=Cursos", { signal: controller.signal })
+        
         if (!res.ok) throw new Error(`Error ${res.status}`)
         const raw = await res.json()
         console.log("GET raw response:", raw)
