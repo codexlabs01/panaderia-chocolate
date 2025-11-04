@@ -14,56 +14,58 @@ interface PurchaseModalProps {
   onClose: () => void
   recipeName: string
   recipePrice: string
+  paymentLink?: string  // Add this prop
 }
 
-
-
-
-export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: PurchaseModalProps) {
+export function PurchaseModal({ 
+  isOpen, 
+  onClose, 
+  recipeName, 
+  recipePrice,
+  paymentLink = "https://mpago.la/2s63Lr2" // Default fallback URL
+}: PurchaseModalProps) {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
   })
 
-  const PAYMENT_URL = "https://mpago.la/2s63Lr2"
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // crear objeto solicitado
-    const payload =  {
-
-        nombre: formData.firstName || "Edgar",
-        apellido: formData.lastName || "Gómez",
+    
+    try {
+      const payload = {
+        nombre: formData.firstName || " ",
+        apellido: formData.lastName || " ",
         email: formData.email || "edgar@example.com",
         receta: recipeName,
         precio: recipePrice,
         tipo: "receta"
       }
-    
 
+      const res = await fetch("/.netlify/functions/enviarCorreo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
 
+      if (!res.ok) throw new Error('Error al enviar el formulario')
 
-    const res = await fetch("/.netlify/functions/enviarCorreo",{
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    })
+      // Use the provided paymentLink or fall back to default
+      try {
+        window.open(paymentLink, "_blank", "noopener,noreferrer")
+      } catch (err) {
+        window.location.href = paymentLink
+      }
 
-    //funcion para enviar mail
-
-    // Abrir link de pago y cerrar modal
-    try {
-      window.open(PAYMENT_URL, "_blank", "noopener,noreferrer")
-    } catch (err) {
-      window.location.href = PAYMENT_URL
+      onClose()
+      setFormData({ firstName: "", lastName: "", email: "" })
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Hubo un error al enviar el formulario')
     }
-
-    onClose()
-    setFormData({ firstName: "", lastName: "", email: "" })
-  
   }
 
   return (

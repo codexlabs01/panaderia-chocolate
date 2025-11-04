@@ -35,7 +35,11 @@ interface Recipe {
 export function Recipes() {
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false)
-  const [selectedRecipe, setSelectedRecipe] = useState<{ name: string; price: string } | null>(null)
+  const [selectedRecipe, setSelectedRecipe] = useState<{
+    name: string
+    price: string
+    paymentLink?: string
+  } | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -44,8 +48,12 @@ export function Recipes() {
     // ejemplo alternativo (descomenta si usas el Google Script que mencionaste antes)
     
 
-  const handlePurchaseClick = (recipeName: string, recipePrice: string) => {
-    setSelectedRecipe({ name: recipeName, price: recipePrice })
+  const handlePurchaseClick = (recipeName: string, recipePrice: string, paymentLink?: string) => {
+    setSelectedRecipe({ 
+      name: recipeName, 
+      price: recipePrice,
+      paymentLink: paymentLink
+    })
     setIsPurchaseModalOpen(true)
   }
 
@@ -166,7 +174,11 @@ export function Recipes() {
                       <span className="text-2xl font-bold text-primary">{recipe.price}</span>
                       <Button
                         variant="outline"
-                        onClick={() => handlePurchaseClick(recipe.title, recipe.price ?? "")}
+                        onClick={() => handlePurchaseClick(
+                          recipe.title, 
+                          recipe.price ?? "", 
+                          recipe.paymentLink
+                        )}
                         className="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors bg-transparent"
                       >
                         <ChefHat className="mr-2 h-4 w-4" />
@@ -189,8 +201,10 @@ export function Recipes() {
           onClose={() => setIsPurchaseModalOpen(false)}
           recipeName={selectedRecipe.name}
           recipePrice={selectedRecipe.price}
+          paymentLink={selectedRecipe.paymentLink}
         />
       )}
+  
     </section>
   )
 }
