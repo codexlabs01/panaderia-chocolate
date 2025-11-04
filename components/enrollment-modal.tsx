@@ -62,7 +62,7 @@ export function EnrollmentModal({ open, onOpenChange, courseTitle }: EnrollmentM
       lastName: "",
       email: "",
       phone: "",
-      experience: "none",
+      experience: "Ninguna",
       expectations: "",
     })
   }
