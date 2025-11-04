@@ -27,7 +27,6 @@ export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: Purc
   })
 
   const PAYMENT_URL = "https://mpago.la/2s63Lr2"
-  const POST_URL = "https://script.google.com/macros/s/AKfycbz120fqiDRbI9CFpG5WSRZOh7K4l4oxUX1kQraGKnEPGeLjuacPqs_V2GxS4iatcOpP/exec" // reemplaza con tu URL real
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,7 +37,8 @@ export function PurchaseModal({ isOpen, onClose, recipeName, recipePrice }: Purc
         apellido: formData.lastName || "Gómez",
         email: formData.email || "edgar@example.com",
         receta: recipeName,
-        precio: recipePrice
+        precio: recipePrice,
+        tipo: "receta"
       }
     
 

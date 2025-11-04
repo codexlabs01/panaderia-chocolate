@@ -26,10 +26,32 @@ export function EnrollmentModal({ open, onOpenChange, courseTitle }: EnrollmentM
     expectations: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     console.log("[v0] Formulario enviado:", formData)
 
+      const payload =  {
+
+        nombre: formData.firstName || " ",
+        apellido: formData.lastName || " ",
+        email: formData.email || "edgar@example.com",
+        telefono: formData.phone || " ",
+        experiencia: formData.experience || "none",
+        expectativas: formData.expectations || " ",
+        curso: courseTitle,
+        tipo: "curso"
+      }
+    
+
+
+
+    const res = await fetch("/.netlify/functions/enviarCorreo",{
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
     
     // Aquí puedes agregar la lógica para enviar los datos
     alert("¡Inscripción enviada con éxito!")

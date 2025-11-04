@@ -17,6 +17,7 @@ if (!MAIL_HOST || !MAIL_USER || !MAIL_PASS) {
 }
 
 
+
 function generarHtmlCliente({ nombre, receta, precio }) {
   return `
     <!DOCTYPE html>
@@ -105,12 +106,71 @@ function generarHtmlAdmin({ nombre, apellido, receta, precio, email }) {
         <div class="container">
           <p class="title">Nueva compra recibida</p>
           <p class="info">
-            <strong>Cliente:</strong> ${nombre || ''} ${apellido || ''}<br />
+            <strong>Cliente:</strong>${nombre || ''} ${apellido || ''}<br />
             <strong>Receta:</strong> ${receta || ''}<br />
-            <strong>Precio:</strong> $ ${precio || ''}<br />
+            <strong>Precio:</strong> ${precio || ''}<br />
             <strong>Correo:</strong> ${email || ''}
           </p>
           <p class="footer">Este mensaje fue generado automáticamente por el sistema de ventas.</p>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+function generarHtmlAdminCurso({ nombre, apellido, email, telefono, experiencia, expectativas, curso }) {
+  return `
+    <!DOCTYPE html>
+    <html lang="es">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Nueva inscripción recibida</title>
+        <style>
+          body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; color: #333; }
+          .container { max-width: 600px; margin: auto; background-color: #fff; border-radius: 8px; padding: 25px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+          .title { font-size: 18px; margin-bottom: 15px; font-weight: bold; }
+          .info { font-size: 16px; line-height: 1.6; }
+          .footer { margin-top: 25px; font-size: 13px; color: #777; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <p class="title">Nueva inscripción al curso <strong>${curso}</strong></p>
+          <p class="info">
+            <strong>Nombre:</strong> ${nombre} ${apellido}<br />
+            <strong>Email:</strong> ${email}<br />
+            <strong>Teléfono:</strong> ${telefono}<br />
+            <strong>Experiencia previa:</strong> ${experiencia}<br />
+            <strong>Expectativas:</strong><br />
+            ${expectativas}
+          </p>
+          <p class="footer">Este mensaje fue generado automáticamente por el sistema de inscripciones.</p>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+function generarHtmlClienteCurso({ nombre, curso }) {
+  return `
+    <!DOCTYPE html>
+    <html lang="es">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Confirmación de inscripción</title>
+        <style>
+          body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; color: #333; }
+          .container { max-width: 600px; margin: auto; background-color: #fff; border-radius: 8px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+          .title { font-size: 20px; margin-bottom: 20px; }
+          .footer { margin-top: 30px; font-size: 14px; color: #777; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <p class="title">Hola <strong>${nombre}</strong>,</p>
+          <p>Gracias por inscribirte al curso <strong>${curso}</strong>.</p>
+          <p>Pronto recibirás más información en tu correo electrónico.</p>
+          <p class="footer">¡Nos alegra tenerte a bordo!</p>
         </div>
       </body>
     </html>
@@ -154,6 +214,12 @@ exports.handler = async (event, context) => {
     }
 
     const body = JSON.parse(event.body || "{}")
+    if (!body) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Cuerpo de la solicitud vacío" }) }
+    }
+
+
+    if (body.tipo == "receta") {
     const { email, nombre, apellido, receta, precio } = body
 
 
@@ -164,20 +230,41 @@ exports.handler = async (event, context) => {
 
     const html = generarHtmlCliente({ nombre, receta, precio })
     const htmlAdmin = generarHtmlAdmin({ nombre, apellido, receta, precio, email })
-
- 
     // AWAIT: importante esperar a que terminen los envíos
     await Promise.all([
       sendEmail(email, "Compra Exitosa", html),
       sendEmail(MAIL_USER, "Nuevo pedido recibido", htmlAdmin),
     ])
-
     console.log("Solicitud recibida:", body)
-
     return {
       statusCode: 200,
       body: JSON.stringify({ mensaje: "Solicitud procesada correctamente" }),
     }
+  }
+  if (body.tipo == "curso") {
+
+    const { email, nombre, apellido, telefono, experiencia, expectativas, curso } = body
+
+    if (!email) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Falta campo email" }) }
+    }
+
+    const htmlCursoCliente = generarHtmlClienteCurso({ nombre, curso})
+    const htmlCusrsoAdmin = generarHtmlAdminCurso({ nombre, apellido, email, telefono, experiencia, expectativas, curso })
+    // AWAIT: importante esperar a que terminen los envíos
+    await Promise.all([
+      sendEmail(email, "Inscripción Exitosa", htmlCursoCliente),
+      sendEmail(MAIL_USER, "Nueva inscripción recibida", htmlCursoAdmin),
+    ])
+    console.log("Solicitud recibida:", body)
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ mensaje: "Solicitud procesada correctamente" }),
+    }
+
+  }
+
+
   } catch (err) {
     console.error("Error enviarCorreo:", err)
     return {
