@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { json } from "stream/consumers"
+import { Loader2 } from "lucide-react"
 
 interface PurchaseModalProps {
   isOpen: boolean
@@ -29,9 +29,11 @@ export function PurchaseModal({
     lastName: "",
     email: "",
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSubmitting(true)
     
     try {
       const payload = {
@@ -53,23 +55,22 @@ export function PurchaseModal({
 
       if (!res.ok) throw new Error('Error al enviar el formulario')
 
-      // Use the provided paymentLink or fall back to default
-      try {
-        window.open(paymentLink, "_blank", "noopener,noreferrer")
-      } catch (err) {
-        window.location.href = paymentLink
-      }
-
+      // Redirect to external payment URL
+      const paymentURL = paymentLink || "https://mpago.la/2s63Lr2"
+      window.location.assign(paymentURL) // This will redirect to the external URL
+      
       onClose()
       setFormData({ firstName: "", lastName: "", email: "" })
     } catch (error) {
       console.error('Error:', error)
       alert('Hubo un error al enviar el formulario')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={isSubmitting ? undefined : onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="text-2xl">Comprar Receta</DialogTitle>
@@ -119,11 +120,28 @@ export function PurchaseModal({
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1 bg-transparent">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onClose} 
+              disabled={isSubmitting}
+              className="flex-1 bg-transparent"
+            >
               Cancelar
             </Button>
-            <Button type="submit" className="flex-1">
-              Confirmar Compra
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="flex-1"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Procesando...
+                </>
+              ) : (
+                'Confirmar Compra'
+              )}
             </Button>
           </div>
         </form>
