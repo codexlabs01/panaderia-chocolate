@@ -22,7 +22,7 @@ export function PurchaseModal({
   onClose,
   recipeName,
   recipePrice,
-  paymentLink = "https://mpago.la/2s63Lr2" // Default fallback URL
+  paymentLink = "https://www.mercadopago.com" // Default fallback URL
 }: PurchaseModalProps) {
   const [formData, setFormData] = useState({
     firstName: "",
