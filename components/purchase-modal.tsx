@@ -17,10 +17,10 @@ interface PurchaseModalProps {
   paymentLink?: string  // Add this prop
 }
 
-export function PurchaseModal({ 
-  isOpen, 
-  onClose, 
-  recipeName, 
+export function PurchaseModal({
+  isOpen,
+  onClose,
+  recipeName,
   recipePrice,
   paymentLink = "https://mpago.la/2s63Lr2" // Default fallback URL
 }: PurchaseModalProps) {
@@ -34,7 +34,7 @@ export function PurchaseModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
+
     try {
       const payload = {
         nombre: formData.firstName || " ",
@@ -44,7 +44,7 @@ export function PurchaseModal({
         precio: recipePrice,
         tipo: "receta"
       }
-
+      console.log(paymentLink)
       const res = await fetch("/.netlify/functions/enviarCorreo", {
         method: "POST",
         headers: {
@@ -55,10 +55,12 @@ export function PurchaseModal({
 
       if (!res.ok) throw new Error('Error al enviar el formulario')
 
-      // Redirect to external payment URL
-      const paymentURL = paymentLink || "https://mpago.la/2s63Lr2"
-      window.location.assign(paymentURL) // This will redirect to the external URL
-      
+      // Get clean external URL without domain manipulation
+      const externalURL = paymentLink
+
+      // Open directly in new tab
+      window.open(externalURL, "_blank")
+
       onClose()
       setFormData({ firstName: "", lastName: "", email: "" })
     } catch (error) {
@@ -120,17 +122,17 @@ export function PurchaseModal({
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onClose} 
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
               disabled={isSubmitting}
               className="flex-1 bg-transparent"
             >
               Cancelar
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSubmitting}
               className="flex-1"
             >
